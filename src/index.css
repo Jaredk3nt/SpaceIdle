@@ -29,15 +29,3 @@ code {
   align-items: center;
   border-radius: 4px;
 }
-
-.progress-bar {
-  width: 150px;
-  height: 20px;
-  margin: .5em 0em;
-  background-color: #eee;
-}
-
-.progress-bar__tracker {
-  height: 100%;
-  background-color: blue;
-}

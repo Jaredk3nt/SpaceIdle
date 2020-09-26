@@ -1,59 +1,104 @@
+import React, { useCallback } from 'react';
 // Handles current task and modifying state
 // Handles combat and modifying state
-import { createContext, useContext, useRef, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
 // Providers
 import { StateContext } from './stateProvider';
+// Utils
+import { calculateDelay } from '../utils/tasks';
 // Variables
 import { TYPES } from './stateProvider';
+import { RESOURCES } from '../constants';
 
 export const ActionContext = createContext();
-
-function calculateDelay(crew, resource) {
-  // TODO: base delay on task
-  return 2000;
-}
 
 export function ActionProvider({ children }) {
   const interval = useRef();
   const [width, setWidth] = useState(0);
   const { state, dispatch } = useContext(StateContext);
 
-  const delay = calculateDelay(state.task.crew, state.task.resource);
+  const delay = useMemo(() => calculateDelay(state), [state]);
 
   useEffect(() => {
     // At start of application check for previous task
     if (state.task) {
-      const updatedCount = Math.floor((Date.now() - state.tasklastUpdated) / delay);
-      // TODO: show dialog for update
+      const timeOffline = Date.now() - state.task.lastUpdated;
+      const tasksCompleted = Math.floor(timeOffline / delay);
       // TODO: calculate previous actions, update state
+      console.log(`You were offline for ${timeOffline / 1000} s`);
+      // TODO: show dialog for update
+      endTask();
     }
   }, []);
 
-  function taskComplete() {
-    const { crew, resource } = state.task;
-    // TODO: do any updates required when the timer completes for a task
-  }
+  // TODO: write an effect that will handle ending tasks automatically if required
+  useEffect(() => {
+    if (delay > 0 && state.task) {
+      startInterval(state);
+    } else {
+      clearInterval(interval.current);
+    }
+  }, [delay, state.task]);
 
-  function startInterval() {
-    setWidth(100);
-    interval.current = setInterval(() => {
-      taskComplete();
-      setWidth(0);
-      setTimeout(() => {
-        setWidth(100);
-      }, 10);
-    }, DELAY);
-  }
+  const startInterval = useCallback(
+    (state) => {
+      setWidth(100);
+      interval.current = setInterval(() => {
+        taskComplete(state);
+        setWidth(0);
+        setTimeout(() => {
+          setWidth(100);
+        }, 10);
+      }, delay);
+    },
+    [delay]
+  );
 
-  function startTask(crew, resource) {
-    dispatch({ type: TYPES.UPDATE_TASK, crew, resource});
-    startInterval();
-  }
+  const startTask = useCallback(
+    (crew, resource) => {
+      if (state.task) {
+        clearInterval(interval.current);
+      }
+      dispatch({ type: TYPES.UPDATE_TASK, crew, resource });
+      // startInterval();
+    },
+    [startInterval]
+  );
 
-  function endTask() {
+  const endTask = useCallback(() => {
     dispatch({ type: TYPES.END_TASK });
-    clearInterval(interval.current);
-  }
+  }, []);
 
-  return <ActionContext.Provider value={{ startTask, endTask, width }}>{children}</ActionContext.Provider>;
+  const taskComplete = useCallback(
+    (state) => {
+      if (state.task) {
+        const { crew, resource } = state.task;
+        const resourceObj = RESOURCES[resource];
+        const items = resourceObj.complete();
+        dispatch({
+          type: TYPES.COMPLETE_TASK,
+          crew,
+          resource,
+          items,
+          xp: resourceObj.xp,
+        });
+      } else {
+        endTask();
+      }
+    },
+    [endTask]
+  );
+
+  return (
+    <ActionContext.Provider value={{ startTask, endTask, width, delay }}>
+      {children}
+    </ActionContext.Provider>
+  );
 }

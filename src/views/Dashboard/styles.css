@@ -1,0 +1,15 @@
+.dashboard-container {
+  background-color: #0B0B0B;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  
+  padding: 2em;
+}
+
+.resource-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 200px);
+  gap: 1em;
+}

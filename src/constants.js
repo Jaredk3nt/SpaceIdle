@@ -28,6 +28,34 @@ export const SHIP_PARTS = {
   },
 };
 
+export const ITEMS = {
+  iron_ore: {
+    key: 'iron_ore',
+    name: 'Iron Ore',
+    value: 10,
+  },
+  palladium_ore: {
+    key: 'palladium_ore',
+    name: 'Palladium Ore',
+    value: 20,
+  },
+  gold_ore: {
+    key: 'gold_ore',
+    name: 'Gold Ore',
+    value: 100,
+  },
+  platinum_ore: {
+    key: 'platinum_ore',
+    name: 'Platinum Ore',
+    value: 200,
+  },
+  diamond: {
+    key: 'diamond',
+    name: 'Diamond',
+    value: 1000,
+  },
+};
+
 // TODO: complete isActive functions
 export const RESOURCES = {
   iron: {
@@ -37,6 +65,7 @@ export const RESOURCES = {
     isActive: (state) => {
       return true;
     },
+    complete: () => [{ key: ITEMS.iron_ore.key, count: 1 }],
   },
   palladium: {
     key: 'palladium',
@@ -45,6 +74,7 @@ export const RESOURCES = {
     isActive: (state) => {
       return true;
     },
+    complete: () => [{ key: ITEMS.palladium_ore.key, count: 1 }],
   },
   gold: {
     key: 'gold',
@@ -53,6 +83,7 @@ export const RESOURCES = {
     isActive: (state) => {
       return true;
     },
+    complete: () => [{ key: ITEMS.gold_ore.key, count: 1 }],
   },
   platinum: {
     key: 'platinum',
@@ -61,6 +92,7 @@ export const RESOURCES = {
     isActive: (state) => {
       return true;
     },
+    complete: () => [{ key: ITEMS.platinum_ore.key, count: 1 }],
   },
   diamond: {
     key: 'diamond',
@@ -69,7 +101,10 @@ export const RESOURCES = {
     isActive: (state) => {
       return true;
     },
+    complete: () => [{ key: ITEMS.diamond.key, count: 1 }],
   },
+  // TODO: enemies
+  // TODO: a single resource for surveying to handle complete function
 };
 
 export const TASKS = {
@@ -78,10 +113,8 @@ export const TASKS = {
     RESOURCES.palladium,
     RESOURCES.gold,
     RESOURCES.platinum,
-    RESOURCES.diamond
+    RESOURCES.diamond,
   ],
   [CREW.admiral]: {},
   [CREW.navigator]: {},
 };
-
-export const ITEMS = {};

@@ -19,7 +19,7 @@ export function useLocalStorage(key, initialArg) {
 }
 
 export function useLocalStorageReducer(key, reducer, initialArg) {
-  const [state, dispatch] = useReducer(reducer, () => {
+  const [state, dispatch] = useReducer(reducer, initialArg, () => {
     try {
       const lsState = localStorage.getItem(key);
       return lsState ? JSON.parse(lsState) : initialArg;
